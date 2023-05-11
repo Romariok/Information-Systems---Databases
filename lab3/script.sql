@@ -3,10 +3,6 @@ create table result
     id   int unique primary key,
     name text unique not null
 );
-
-
-
-
 create table feeling
 (
     id   int unique primary key,
@@ -39,12 +35,12 @@ create table surrounding_object
 (
     id         int unique primary key,
     name       text not null,
-    stateid    text  not null,
-    consistid  text  not null,
-    visibilityid text not null,
-    FOREIGN KEY (stateid) references state (state),
-    FOREIGN KEY (consistid) references objectConsistOf (description),
-    FOREIGN KEY (visibilityid) references object_visibility (visibility)
+    stateId    int  not null,
+    consistId  int  not null,
+    visibility text not null,
+    FOREIGN KEY (stateId) references state (id),
+    FOREIGN KEY (consistId) references objectConsistOf (id),
+    FOREIGN KEY (visibility) references object_visibility (visibility)
 );
 create table logical_result
 (
@@ -60,8 +56,8 @@ create table human
 (
     id      int unique primary key,
     name    text not null,
-    stateid text  not null,
-    FOREIGN KEY (stateid) references state (state)
+    stateId int  not null,
+    FOREIGN KEY (stateId) references state (id)
 );
 create table human_result
 (
@@ -107,14 +103,14 @@ values (7, 'Радостное воодушевление');
 
 
 
-insert into surrounding_object (id, name, stateid, consistid, visibilityid)
+insert into surrounding_object (id, name, stateId, consistId, visibility)
 values (1, 'Крыша', 5, 1, 'Еле проглядывается');
-insert into surrounding_object (id, name, stateid, consistid, visibilityid)
+insert into surrounding_object (id, name, stateId, consistId, visibility)
 values (2, 'Стеклянные пирамиды световых фонарей', 1, 2, 'Еле проглядывается');
-insert into surrounding_object (id, name, stateid, consistid, visibilityid)
+insert into surrounding_object (id, name, stateId, consistId, visibility)
 values (3, 'Дверь', 6, 3, 'Еле проглядывается');
-insert into surrounding_object (id, name, stateid, consistid, visibilityid)
-    values (4, 'Ветки', 4, 3, 'Еле проглядывается');
+insert into surrounding_object (id, name, stateId, consistId, visibility)
+values (4, 'Ветки', 4, 3, 'Еле проглядывается');
 
 insert into result (id, name)
 values (1, 'Ничего не произошло');
@@ -129,10 +125,10 @@ values (1, 3, 1, 2);
 insert into logical_result (id, location, feeling, result)
 values (2, 3, 1, 1);
 
-insert into human (id, name, stateid)
-values (1, 'Элли', 7);
-insert into human (id, name, stateid)
-values (2, 'Татошка', 7);
+insert into human (id, name, stateId)
+values (1, 'Элли', 2);
+insert into human (id, name, stateId)
+values (2, 'Татошка', 2);
 
 
 insert into human_result (id, humanId, resultId)
@@ -143,23 +139,7 @@ insert into human_result (id, humanId, resultId)
 values (3, 2, 1);
 insert into human_result (id, humanId, resultId)
 values (4, 2, 1);
+insert into human_result (id, humanId, resultId)
+values (5, 2, 2);
 
 
-
-------------------ДОП---------------------------
-
-WITH hr AS (SELECT humanId, COUNT(*) AS cnt
-            FROM human_result
-            GROUP BY humanId),
-     hrf AS (SELECT humanId, cnt
-             FROM hr
-             WHERE cnt > 2
-             GROUP BY humanId, cnt),
-     h AS (SELECT id, name
-           FROM human
-           GROUP BY id)
-
-SELECT id, name
-FROM h
-WHERE id IN (SELECT humanId FROM hrf)
-;
